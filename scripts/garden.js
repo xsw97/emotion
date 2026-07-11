@@ -413,5 +413,258 @@ const Garden = {
       return '养分不够，植物们渴望成长的能量！';
     }
     return '花园正在茁壮成长，继续保持哦~';
+  },
+
+  // ========== 种植功能 ==========
+  
+  /**
+   * 种植模式状态
+   */
+  plantMode: {
+    active: false,
+    selectedPlant: null
+  },
+
+  /**
+   * 初始化种植功能
+   */
+  initPlanting() {
+    this.plantBtn = document.getElementById('plant-btn');
+    this.plantPanel = document.getElementById('plant-panel');
+    this.plantPanelClose = document.getElementById('plant-panel-close');
+    this.plantGrid = document.getElementById('plant-grid');
+    this.plantModeIndicator = document.getElementById('plant-mode-indicator');
+    this.selectedPlantName = document.getElementById('selected-plant-name');
+    
+    if (!this.plantBtn || !this.plantPanel) return;
+    
+    // 绑定事件
+    this.plantBtn.addEventListener('click', () => this.openPlantPanel());
+    this.plantPanelClose.addEventListener('click', () => this.closePlantPanel());
+    
+    // 点击花园区域种植
+    const platform = document.querySelector('.floating-platform');
+    if (platform) {
+      platform.addEventListener('click', (e) => this.handlePlantClick(e));
+    }
+    
+    // 点击其他区域关闭种植模式
+    document.addEventListener('click', (e) => {
+      if (this.plantMode.active && 
+          !this.plantPanel.contains(e.target) && 
+          !this.plantBtn.contains(e.target) &&
+          !e.target.closest('.floating-platform')) {
+        this.exitPlantMode();
+      }
+    });
+    
+    // 生成植物选项
+    this.renderPlantOptions();
+  },
+
+  /**
+   * 渲染植物选项
+   */
+  renderPlantOptions() {
+    if (!this.plantGrid) return;
+    
+    const state = Storage.getGardenState();
+    const unlockedPlants = state.unlockedPlants || ['flower-1', 'grass-1'];
+    
+    this.plantGrid.innerHTML = '';
+    
+    Object.keys(this.plantTypes).forEach(typeId => {
+      const type = this.plantTypes[typeId];
+      const isUnlocked = unlockedPlants.includes(typeId);
+      const isLocked = type.unlockLevel && type.unlockLevel > state.level;
+      
+      const item = document.createElement('div');
+      item.className = `plant-item ${!isUnlocked || isLocked ? 'locked' : ''}`;
+      item.dataset.typeId = typeId;
+      
+      item.innerHTML = `
+        <div class="plant-item-emoji">${type.emoji}</div>
+        <div class="plant-item-name">${type.name}</div>
+      `;
+      
+      if (isUnlocked && !isLocked) {
+        item.addEventListener('click', () => this.selectPlant(typeId));
+      }
+      
+      this.plantGrid.appendChild(item);
+    });
+  },
+
+  /**
+   * 打开种植面板
+   */
+  openPlantPanel() {
+    if (this.plantPanel) {
+      this.plantPanel.classList.add('active');
+    }
+    this.renderPlantOptions();
+  },
+
+  /**
+   * 关闭种植面板
+   */
+  closePlantPanel() {
+    if (this.plantPanel) {
+      this.plantPanel.classList.remove('active');
+    }
+    this.exitPlantMode();
+  },
+
+  /**
+   * 选择植物
+   * @param {string} typeId 植物类型ID
+   */
+  selectPlant(typeId) {
+    const type = this.plantTypes[typeId];
+    if (!type) return;
+    
+    this.plantMode.active = true;
+    this.plantMode.selectedPlant = typeId;
+    
+    // 更新UI
+    if (this.selectedPlantName) {
+      this.selectedPlantName.textContent = type.name;
+    }
+    if (this.plantModeIndicator) {
+      this.plantModeIndicator.classList.add('active');
+    }
+    
+    // 高亮选中的植物
+    const items = this.plantGrid.querySelectorAll('.plant-item');
+    items.forEach(item => {
+      item.classList.toggle('selected', item.dataset.typeId === typeId);
+    });
+    
+    // 关闭面板
+    this.closePlantPanel();
+  },
+
+  /**
+   * 退出种植模式
+   */
+  exitPlantMode() {
+    this.plantMode.active = false;
+    this.plantMode.selectedPlant = null;
+    
+    if (this.plantModeIndicator) {
+      this.plantModeIndicator.classList.remove('active');
+    }
+    
+    // 取消高亮
+    const items = this.plantGrid.querySelectorAll('.plant-item');
+    items.forEach(item => item.classList.remove('selected'));
+  },
+
+  /**
+   * 处理种植点击
+   * @param {Event} e 点击事件
+   */
+  handlePlantClick(e) {
+    if (!this.plantMode.active || !this.plantMode.selectedPlant) return;
+    
+    // 获取点击位置
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // 种植植物
+    this.plantAt(this.plantMode.selectedPlant, x, y);
+    
+    // 退出种植模式
+    this.exitPlantMode();
+  },
+
+  /**
+   * 在指定位置种植
+   * @param {string} typeId 植物类型ID
+   * @param {number} x X坐标
+   * @param {number} y Y坐标
+   */
+  plantAt(typeId, x, y) {
+    const type = this.plantTypes[typeId];
+    if (!type) return;
+    
+    // 创建植物元素
+    const plant = document.createElement('div');
+    plant.className = 'plant plant-animation';
+    plant.dataset.typeId = typeId;
+    plant.style.left = `${x - type.size.width / 2}px`;
+    plant.style.bottom = `${y - type.size.height / 2}px`;
+    plant.style.width = `${type.size.width}px`;
+    plant.style.height = `${type.size.height}px`;
+    plant.innerHTML = `<span class="plant-emoji">${type.emoji}</span>`;
+    
+    if (this.container) {
+      this.container.appendChild(plant);
+      
+      // 创建粒子效果
+      this.createPlantParticles(x, y);
+      
+      // 保存到存储
+      this.savePlantedFlower(typeId, x, y);
+      
+      // 播放音效
+      if (typeof GardenAudio !== 'undefined') {
+        GardenAudio.play('plant');
+      }
+    }
+  },
+
+  /**
+   * 创建种植粒子效果
+   * @param {number} x X坐标
+   * @param {number} y Y坐标
+   */
+  createPlantParticles(x, y) {
+    const colors = ['#FFE066', '#FFB7C5', '#98D8C8', '#87CEEB'];
+    const particleCount = 8;
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'plant-particle';
+      particle.style.left = `${x}px`;
+      particle.style.bottom = `${y}px`;
+      particle.style.background = colors[i % colors.length];
+      
+      // 随机方向
+      const angle = (i / particleCount) * Math.PI * 2;
+      const distance = 30 + Math.random() * 20;
+      particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+      particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+      
+      if (this.container) {
+        this.container.appendChild(particle);
+        
+        // 动画结束后移除
+        setTimeout(() => particle.remove(), 1000);
+      }
+    }
+  },
+
+  /**
+   * 保存种植的花朵
+   * @param {string} typeId 植物类型ID
+   * @param {number} x X坐标
+   * @param {number} y Y坐标
+   */
+  savePlantedFlower(typeId, x, y) {
+    const state = Storage.getGardenState();
+    if (!state.plants) {
+      state.plants = [];
+    }
+    
+    state.plants.push({
+      typeId: typeId,
+      x: x,
+      y: y,
+      plantedAt: Date.now()
+    });
+    
+    Storage.set(Storage.KEYS.GARDEN_STATE, state);
   }
 };

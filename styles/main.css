@@ -1806,3 +1806,295 @@ body {
     background: rgba(45, 55, 72, 0.9);
   }
 }
+
+/* ===================================
+   种植功能样式
+   =================================== */
+
+/* 种植按钮 */
+.plant-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-mint) 0%, var(--color-sky) 100%);
+  border: none;
+  box-shadow: 0 4px 20px rgba(152, 216, 200, 0.4);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.3s ease;
+  z-index: 100;
+  animation: plantBtnPulse 2s ease-in-out infinite;
+}
+
+.plant-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(152, 216, 200, 0.6);
+}
+
+.plant-btn:active {
+  transform: scale(0.95);
+}
+
+.plant-btn-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.plant-btn-text {
+  font-size: 10px;
+  color: white;
+  font-weight: 600;
+}
+
+@keyframes plantBtnPulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(152, 216, 200, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(152, 216, 200, 0.7);
+  }
+}
+
+/* 种植面板 */
+.plant-panel {
+  position: fixed;
+  bottom: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+  transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  padding: 20px;
+}
+
+.plant-panel.active {
+  bottom: 0;
+}
+
+.plant-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.plant-panel-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2D3748;
+  margin: 0;
+}
+
+.plant-panel-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.plant-panel-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.plant-panel-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.plant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.plant-item {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(240, 244, 248, 0.8) 100%);
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.plant-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-mint);
+}
+
+.plant-item.selected {
+  border-color: var(--color-mint);
+  background: linear-gradient(135deg, rgba(152, 216, 200, 0.2) 0%, rgba(135, 206, 235, 0.2) 100%);
+}
+
+.plant-item.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.plant-item.locked::after {
+  content: '🔒';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+}
+
+.plant-item-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.plant-item-name {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.plant-panel-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.plant-tip {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin: 0;
+}
+
+/* 种植模式指示器 */
+.plant-mode-indicator {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(152, 216, 200, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 20px rgba(152, 216, 200, 0.4);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.plant-mode-indicator.active {
+  opacity: 1;
+}
+
+/* 种植动画 */
+.plant-animation {
+  position: absolute;
+  pointer-events: none;
+  animation: plantGrow 0.8s ease-out forwards;
+}
+
+@keyframes plantGrow {
+  0% {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translateY(-10px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 种植成功粒子效果 */
+.plant-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  pointer-events: none;
+  animation: plantParticle 1s ease-out forwards;
+}
+
+@keyframes plantParticle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .plant-btn {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .plant-btn-icon {
+    font-size: 20px;
+  }
+  
+  .plant-btn-text {
+    font-size: 9px;
+  }
+  
+  .plant-panel {
+    width: 95%;
+    padding: 16px;
+  }
+  
+  .plant-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .plant-item-emoji {
+    font-size: 28px;
+  }
+  
+  .plant-item-name {
+    font-size: 11px;
+  }
+}

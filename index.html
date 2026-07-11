@@ -56,7 +56,33 @@
           <div id="plants-container" class="plants-container">
             <!-- 植物将通过 JS 动态生成 -->
           </div>
+          <!-- 种植按钮 -->
+          <button class="plant-btn" id="plant-btn" title="种植花朵">
+            <span class="plant-btn-icon">🌱</span>
+            <span class="plant-btn-text">种花</span>
+          </button>
         </div>
+      </div>
+      
+      <!-- 种植面板 -->
+      <div class="plant-panel" id="plant-panel">
+        <div class="plant-panel-header">
+          <h3>选择花朵种植</h3>
+          <button class="plant-panel-close" id="plant-panel-close">×</button>
+        </div>
+        <div class="plant-panel-content">
+          <div class="plant-grid" id="plant-grid">
+            <!-- 花朵选项将通过 JS 动态生成 -->
+          </div>
+        </div>
+        <div class="plant-panel-footer">
+          <p class="plant-tip">💡 点击花朵后，在花园中点击即可种植</p>
+        </div>
+      </div>
+      
+      <!-- 种植模式指示器 -->
+      <div class="plant-mode-indicator" id="plant-mode-indicator">
+        🌱 点击花园中的任意位置种植 <span id="selected-plant-name"></span>
       </div>
       
       <!-- UI 覆盖层 -->

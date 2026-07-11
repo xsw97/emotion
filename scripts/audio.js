@@ -279,5 +279,50 @@ const GardenAudio = {
     if (this.gainNode) {
       this.gainNode.gain.value = Math.max(0, Math.min(1, value));
     }
+  },
+
+  /**
+   * 播放指定类型的音效
+   * @param {string} type 音效类型
+   */
+  play(type) {
+    this.checkContext();
+    
+    switch (type) {
+      case 'plant':
+        this.playPlantSound();
+        break;
+      case 'complete':
+        this.playCompletionSound();
+        break;
+      case 'levelup':
+        this.playLevelUpSound();
+        break;
+      default:
+        break;
+    }
+  },
+
+  /**
+   * 播放种植音效（轻柔的"叮"声）
+   */
+  playPlantSound() {
+    if (!this.context) return;
+    
+    const osc = this.context.createOscillator();
+    const gain = this.context.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, this.context.currentTime); // A5
+    osc.frequency.exponentialRampToValueAtTime(1320, this.context.currentTime + 0.1); // E6
+    
+    gain.gain.setValueAtTime(0.3, this.context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.3);
+    
+    osc.connect(gain);
+    gain.connect(this.gainNode);
+    
+    osc.start();
+    osc.stop(this.context.currentTime + 0.3);
   }
 };
