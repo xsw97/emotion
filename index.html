@@ -1,33 +1,295 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="扣子编程，你的 AI 开发伙伴已就位" />
-    <title>扣子编程 - AI 开发伙伴</title>
-    <link rel="stylesheet" href="/styles/main.css" />
-  </head>
-  <body>
-    <div id="app">
-      <main class="main-wrapper">
-        <div class="content-container">
-          <img
-            src="https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze-coding/icon/coze-coding.gif"
-            alt="扣子编程 Logo"
-            class="logo-image"
-          />
-          <div>
-            <div class="text-container">
-              <h1 class="heading">
-                应用开发中
-              </h1>
-              <p class="description">
-                请稍后，页面即将呈现
-              </p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="空中花园 - 你的情绪治愈空间" />
+  <title>空中花园 - 情绪治愈空间</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.cn" />
+  <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+  <link href="https://fonts.googleapis.cn/css2?family=Quicksand:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 主花园场景 -->
+    <div id="garden-scene" class="garden-scene">
+      <!-- 天空背景层 -->
+      <div id="sky-layer" class="sky-layer"></div>
+      
+      <!-- 云朵层 -->
+      <div id="clouds-layer" class="clouds-layer">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+        <div class="cloud cloud-5"></div>
+      </div>
+      
+      <!-- 天气特效层 -->
+      <div id="weather-effects" class="weather-effects">
+        <!-- 雨滴容器 -->
+        <div id="rain-container" class="rain-container"></div>
+        <!-- 雷电 -->
+        <div id="lightning" class="lightning"></div>
+        <!-- 彩虹 -->
+        <div id="rainbow" class="rainbow"></div>
+        <!-- 阳光 -->
+        <div id="sunlight" class="sunlight"></div>
+        <!-- 蝴蝶容器 -->
+        <div id="butterflies-container" class="butterflies-container"></div>
+      </div>
+      
+      <!-- 粒子层 -->
+      <div id="particles-layer" class="particles-layer"></div>
+      
+      <!-- 花园主体层 -->
+      <div id="garden-main" class="garden-main">
+        <!-- 漂浮平台 -->
+        <div class="floating-platform">
+          <!-- 草地 -->
+          <div id="grass-layer" class="grass-layer"></div>
+          <!-- 植物容器 -->
+          <div id="plants-container" class="plants-container">
+            <!-- 植物将通过 JS 动态生成 -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- UI 覆盖层 -->
+      <div class="ui-overlay">
+        <!-- 顶部状态栏 -->
+        <header class="top-bar">
+          <div class="garden-status">
+            <span class="level-badge" id="level-badge">种子</span>
+            <div class="energy-bar">
+              <div class="energy-label">
+                <span class="sunshine-icon">☀️</span>
+                <span id="sunshine-value">0</span>
+                <span class="nutrient-icon">🌱</span>
+                <span id="nutrient-value">0</span>
+              </div>
+              <div class="energy-progress">
+                <div class="progress-bar sunshine-bar" id="sunshine-bar"></div>
+                <div class="progress-bar nutrient-bar" id="nutrient-bar"></div>
+              </div>
+            </div>
+          </div>
+          <div class="streak-info">
+            <span class="streak-icon">🔥</span>
+            <span id="streak-count">0</span>天连续打卡
+          </div>
+          <div class="action-buttons">
+            <button class="btn-icon" id="btn-stats" title="统计数据">📊</button>
+            <button class="btn-icon" id="btn-sound" title="背景音乐">🎵</button>
+          </div>
+        </header>
+        
+        <!-- 中央情绪显示 -->
+        <div class="mood-display" id="mood-display">
+          <div class="current-mood">
+            <span class="mood-emoji" id="current-mood-emoji">😊</span>
+            <span class="mood-text" id="current-mood-text">今天感觉如何？</span>
+          </div>
+          <button class="btn-checkin" id="btn-checkin">情绪打卡</button>
+        </div>
+        
+        <!-- 任务提示区 -->
+        <div class="task-hint" id="task-hint">
+          <div class="hint-content">
+            <span class="hint-icon">💡</span>
+            <span class="hint-text" id="hint-text">花园需要你的关爱~</span>
+          </div>
+          <button class="btn-task" id="btn-start-task">开始任务</button>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+          <button class="nav-btn active" data-view="garden">
+            <span class="nav-icon">🌸</span>
+            <span class="nav-label">花园</span>
+          </button>
+          <button class="nav-btn" data-view="tasks">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">任务</span>
+          </button>
+          <button class="nav-btn" data-view="stats">
+            <span class="nav-icon">📈</span>
+            <span class="nav-label">统计</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+    
+    <!-- 情绪打卡面板 -->
+    <div id="mood-panel" class="panel hidden">
+      <div class="panel-header">
+        <h2>今天的心情如何？</h2>
+        <button class="btn-close" id="close-mood-panel">×</button>
+      </div>
+      <div class="mood-selector">
+        <button class="mood-btn" data-mood="5">
+          <span class="mood-emoji">😊</span>
+          <span class="mood-label">非常开心</span>
+          <span class="mood-desc">阳光灿烂</span>
+        </button>
+        <button class="mood-btn" data-mood="4">
+          <span class="mood-emoji">🙂</span>
+          <span class="mood-label">开心</span>
+          <span class="mood-desc">晴朗舒适</span>
+        </button>
+        <button class="mood-btn" data-mood="3">
+          <span class="mood-emoji">😐</span>
+          <span class="mood-label">一般</span>
+          <span class="mood-desc">多云微阴</span>
+        </button>
+        <button class="mood-btn" data-mood="2">
+          <span class="mood-emoji">😔</span>
+          <span class="mood-label">低落</span>
+          <span class="mood-desc">细雨绵绵</span>
+        </button>
+        <button class="mood-btn" data-mood="1">
+          <span class="mood-emoji">😢</span>
+          <span class="mood-label">很难过</span>
+          <span class="mood-desc">暴风雨</span>
+        </button>
+      </div>
+      <div class="mood-note">
+        <textarea id="mood-note-input" placeholder="记录此刻的心情..." rows="3"></textarea>
+      </div>
+      <button class="btn-primary" id="submit-mood">记录心情</button>
+    </div>
+    
+    <!-- 任务面板 -->
+    <div id="task-panel" class="panel hidden">
+      <div class="panel-header">
+        <h2>情绪调节任务</h2>
+        <button class="btn-close" id="close-task-panel">×</button>
+      </div>
+      <div class="task-list" id="task-list">
+        <!-- 任务卡片将通过 JS 动态生成 -->
+      </div>
+    </div>
+    
+    <!-- 任务执行面板 -->
+    <div id="task-execution-panel" class="panel hidden">
+      <div class="panel-header">
+        <h2 id="task-execution-title">任务进行中</h2>
+        <button class="btn-close" id="close-execution-panel">×</button>
+      </div>
+      <div class="task-content" id="task-execution-content">
+        <!-- 任务内容将通过 JS 动态生成 -->
+      </div>
+      <div class="task-progress">
+        <div class="progress-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="45" />
+            <circle class="ring-progress" id="task-progress-ring" cx="50" cy="50" r="45" />
+          </svg>
+          <span class="progress-text" id="task-progress-text">0%</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 统计面板 -->
+    <div id="stats-panel" class="panel hidden">
+      <div class="panel-header">
+        <h2>情绪统计</h2>
+        <button class="btn-close" id="close-stats-panel">×</button>
+      </div>
+      <div class="stats-content">
+        <!-- 统计卡片 -->
+        <div class="stats-cards">
+          <div class="stat-card">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-streak">0</span>
+              <span class="stat-label">连续打卡</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">📝</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total">0</span>
+              <span class="stat-label">总记录</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">😊</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-happy">0%</span>
+              <span class="stat-label">开心天数</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🎯</span>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-tasks">0</span>
+              <span class="stat-label">完成任务</span>
             </div>
           </div>
         </div>
-      </main>
+        
+        <!-- 情绪日历 -->
+        <div class="calendar-section">
+          <h3>情绪日历</h3>
+          <div class="calendar-nav">
+            <button class="btn-nav" id="prev-month">◀</button>
+            <span class="calendar-month" id="calendar-month">2024年1月</span>
+            <button class="btn-nav" id="next-month">▶</button>
+          </div>
+          <div class="calendar-grid" id="calendar-grid">
+            <!-- 日历将通过 JS 动态生成 -->
+          </div>
+        </div>
+        
+        <!-- 情绪趋势 -->
+        <div class="trend-section">
+          <h3>情绪趋势</h3>
+          <div class="trend-tabs">
+            <button class="trend-tab active" data-range="7">近7天</button>
+            <button class="trend-tab" data-range="30">近30天</button>
+          </div>
+          <div class="trend-chart" id="trend-chart">
+            <!-- 图表将通过 JS/Canvas 动态生成 -->
+          </div>
+        </div>
+      </div>
     </div>
-  </body>
+    
+    <!-- 升级庆祝面板 -->
+    <div id="celebration-panel" class="panel hidden">
+      <div class="celebration-content">
+        <div class="celebration-animation" id="celebration-animation"></div>
+        <h2 class="celebration-title" id="celebration-title">恭喜升级！</h2>
+        <p class="celebration-desc" id="celebration-desc">你的花园已经成长到新的阶段</p>
+        <div class="unlock-info" id="unlock-info">
+          <!-- 解锁信息将通过 JS 动态生成 -->
+        </div>
+        <button class="btn-primary" id="close-celebration">继续照顾花园</button>
+      </div>
+    </div>
+    
+    <!-- 粒子爆发容器 -->
+    <div id="particle-burst-container" class="particle-burst-container"></div>
+    
+    <!-- 加载状态 -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">花园正在苏醒...</p>
+    </div>
+  </div>
+  
+  <!-- JavaScript 模块 -->
+  <script src="/scripts/storage.js"></script>
+  <script src="/scripts/audio.js"></script>
+  <script src="/scripts/weather.js"></script>
+  <script src="/scripts/garden.js"></script>
+  <script src="/scripts/tasks.js"></script>
+  <script src="/scripts/stats.js"></script>
+  <script src="/scripts/app.js"></script>
+</body>
 </html>
