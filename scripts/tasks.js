@@ -251,11 +251,14 @@ const Tasks = {
     // 更新花园UI
     Garden.updateUI(Storage.getGardenState());
     
+    // 保存奖励信息（在 cancelTask 之前）
+    const reward = this.currentTask ? this.currentTask.reward : { sunshine: 10, nutrient: 10 };
+    
     // 清理
     this.cancelTask();
     
     // 显示成功提示
-    App.showToast(`任务完成！获得 ☀️${this.currentTask.reward.sunshine} 🌱${this.currentTask.reward.nutrient}`);
+    App.showToast(`任务完成！获得 ☀️${reward.sunshine} 🌱${reward.nutrient}`);
   },
 
   /**
