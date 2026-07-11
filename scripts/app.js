@@ -127,7 +127,8 @@ const App = {
     // 检查音乐设置
     const settings = Storage.getSettings();
     if (settings.soundEnabled) {
-      document.getElementById('btn-sound')?.textContent = '🔊';
+      const btnSound = document.getElementById('btn-sound');
+      if (btnSound) btnSound.textContent = '🔊';
     }
   },
 
@@ -143,7 +144,8 @@ const App = {
       const todayMood = Storage.getTodayMood();
       if (todayMood) {
         this.selectMood(todayMood.mood);
-        document.getElementById('mood-note-input')?.value = todayMood.note || '';
+        const moodNoteInput = document.getElementById('mood-note-input');
+        if (moodNoteInput) moodNoteInput.value = todayMood.note || '';
       }
     }
   },
@@ -214,7 +216,8 @@ const App = {
     document.querySelectorAll('.mood-btn').forEach(btn => {
       btn.classList.remove('selected');
     });
-    document.getElementById('mood-note-input')?.value = '';
+    const moodNoteInput = document.getElementById('mood-note-input');
+    if (moodNoteInput) moodNoteInput.value = '';
     
     // 播放音效
     GardenAudio.playMoodSelectSound();
