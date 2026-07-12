@@ -68,6 +68,9 @@ const Garden = {
     
     // 更新UI
     this.updateUI(state);
+    
+    // 初始化种植功能
+    this.initPlanting();
   },
 
   /**
