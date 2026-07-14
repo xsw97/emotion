@@ -1021,14 +1021,21 @@ body {
 }
 
 /* 底部导航 */
-.bottom-nav {
+/* 侧边栏导航 */
+.sidebar-nav {
+  position: fixed;
+  left: var(--space-lg);
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
-  justify-content: center;
-  gap: var(--space-lg);
+  flex-direction: column;
+  gap: var(--space-md);
   padding: var(--space-md);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
+  z-index: 50;
+  backdrop-filter: blur(10px);
 }
 
 .nav-btn {
@@ -1044,6 +1051,7 @@ body {
   color: #666;
   cursor: pointer;
   transition: all var(--transition-fast) ease;
+  min-width: 60px;
 }
 
 .nav-btn:hover {
