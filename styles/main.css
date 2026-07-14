@@ -1817,54 +1817,19 @@ body {
    =================================== */
 
 /* 种植按钮 */
-.plant-btn {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-mint) 0%, var(--color-sky) 100%);
-  border: none;
-  box-shadow: 0 4px 20px rgba(152, 216, 200, 0.4);
-  cursor: pointer;
+/* 种植面板样式 */
+
+/* 任务面板底部按钮区域 */
+.panel-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 2px;
-  transition: all 0.3s ease;
-  z-index: 200;
-  animation: plantBtnPulse 2s ease-in-out infinite;
 }
 
-.plant-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 30px rgba(152, 216, 200, 0.6);
-}
-
-.plant-btn:active {
-  transform: scale(0.95);
-}
-
-.plant-btn-icon {
-  font-size: 24px;
-  line-height: 1;
-}
-
-.plant-btn-text {
-  font-size: 10px;
-  color: white;
-  font-weight: 600;
-}
-
-@keyframes plantBtnPulse {
-  0%, 100% {
-    box-shadow: 0 4px 20px rgba(152, 216, 200, 0.4);
-  }
-  50% {
-    box-shadow: 0 4px 30px rgba(152, 216, 200, 0.7);
-  }
+.panel-footer .btn {
+  width: 100%;
+  max-width: 200px;
 }
 
 /* 种植面板 */
@@ -2070,21 +2035,6 @@ body {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .plant-btn {
-    width: 50px;
-    height: 50px;
-    bottom: 15px;
-    right: 15px;
-  }
-  
-  .plant-btn-icon {
-    font-size: 20px;
-  }
-  
-  .plant-btn-text {
-    font-size: 9px;
-  }
-  
   .plant-panel {
     width: 95%;
     padding: 16px;
