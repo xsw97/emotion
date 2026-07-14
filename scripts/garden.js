@@ -51,6 +51,10 @@ const Garden = {
   init() {
     this.container = document.getElementById('plants-container');
     this.grassLayer = document.getElementById('grass-layer');
+    this.lawnGrid = document.getElementById('lawn-grid');
+    
+    // 创建网格草坪
+    this.createLawnGrid();
     
     // 创建草地
     this.createGrass();
@@ -71,6 +75,85 @@ const Garden = {
     
     // 初始化种植功能
     this.initPlanting();
+  },
+
+  /**
+   * 创建网格草坪（植物大战僵尸风格）
+   */
+  createLawnGrid() {
+    if (!this.lawnGrid) return;
+    
+    // 清空现有内容
+    this.lawnGrid.innerHTML = '';
+    
+    // 创建15个格子 (5列3行)
+    for (let i = 0; i < 15; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'lawn-cell';
+      cell.dataset.index = i;
+      cell.dataset.row = Math.floor(i / 5);
+      cell.dataset.col = i % 5;
+      
+      // 点击格子种植
+      cell.addEventListener('click', (e) => {
+        if (this.plantingMode && this.selectedPlantType) {
+          this.plantInCell(cell, i);
+        }
+      });
+      
+      this.lawnGrid.appendChild(cell);
+    }
+  },
+
+  /**
+   * 在格子中种植植物
+   * @param {HTMLElement} cell 格子元素
+   * @param {number} index 格子索引
+   */
+  plantInCell(cell, index) {
+    if (cell.classList.contains('planted')) {
+      // 如果已有植物，提示用户
+      if (typeof GardenAudio !== 'undefined') {
+        GardenAudio.play('error');
+      }
+      return;
+    }
+    
+    const typeId = this.selectedPlantType;
+    const type = this.plantTypes[typeId];
+    if (!type) return;
+    
+    // 标记格子为已种植
+    cell.classList.add('planted');
+    
+    // 创建植物元素
+    const plant = document.createElement('div');
+    plant.className = 'plant plant-animation';
+    plant.dataset.typeId = typeId;
+    plant.dataset.cellIndex = index;
+    plant.style.width = '100%';
+    plant.style.height = '100%';
+    plant.innerHTML = `<span class="plant-emoji">${type.emoji}</span>`;
+    
+    cell.appendChild(plant);
+    
+    // 创建粒子效果
+    const rect = cell.getBoundingClientRect();
+    const platformRect = this.platform.getBoundingClientRect();
+    const x = rect.left - platformRect.left + rect.width / 2;
+    const y = rect.top - platformRect.top + rect.height / 2;
+    this.createPlantParticles(x, y);
+    
+    // 保存到存储
+    this.savePlantedFlower(typeId, index, 'cell');
+    
+    // 播放音效
+    if (typeof GardenAudio !== 'undefined') {
+      GardenAudio.play('plant');
+    }
+    
+    // 退出种植模式
+    this.exitPlantingMode();
   },
 
   /**
@@ -427,6 +510,15 @@ const Garden = {
     active: false,
     selectedPlant: null
   },
+  
+  // 兼容旧属性
+  get plantingMode() {
+    return this.plantMode.active;
+  },
+  
+  get selectedPlantType() {
+    return this.plantMode.selectedPlant;
+  },
 
   /**
    * 初始化种植功能
@@ -445,18 +537,12 @@ const Garden = {
     this.plantBtn.addEventListener('click', () => this.openPlantPanel());
     this.plantPanelClose.addEventListener('click', () => this.closePlantPanel());
     
-    // 点击花园区域种植
-    this.platform = document.querySelector('.floating-platform');
-    if (this.platform) {
-      this.platform.addEventListener('click', (e) => this.handlePlantClick(e));
-    }
-    
     // 点击其他区域关闭种植模式
     document.addEventListener('click', (e) => {
       if (this.plantMode.active && 
           !this.plantPanel.contains(e.target) && 
           !this.plantBtn.contains(e.target) &&
-          !e.target.closest('.floating-platform')) {
+          !e.target.closest('.lawn-grid')) {
         this.exitPlantMode();
       }
     });
@@ -652,10 +738,10 @@ const Garden = {
   /**
    * 保存种植的花朵
    * @param {string} typeId 植物类型ID
-   * @param {number} x X坐标
-   * @param {number} y Y坐标
+   * @param {number} cellIndex 格子索引
+   * @param {string} positionType 位置类型 ('cell' 或 'free')
    */
-  savePlantedFlower(typeId, x, y) {
+  savePlantedFlower(typeId, cellIndex, positionType = 'cell') {
     const state = Storage.getGardenState();
     if (!state.plants) {
       state.plants = [];
@@ -663,8 +749,8 @@ const Garden = {
     
     state.plants.push({
       typeId: typeId,
-      x: x,
-      y: y,
+      cellIndex: cellIndex,
+      positionType: positionType,
       plantedAt: Date.now()
     });
     

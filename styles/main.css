@@ -529,23 +529,76 @@ body {
   position: absolute;
   bottom: 10%;
   left: 50%;
-  transform: translateX(-50%) perspective(800px) rotateX(5deg);
-  width: 80%;
-  max-width: 600px;
-  height: 200px;
+  transform: translateX(-50%) perspective(800px) rotateX(8deg);
+  width: 85%;
+  max-width: 650px;
+  height: 220px;
   background: linear-gradient(180deg, 
-    rgba(144, 238, 144, 0.4) 0%,
-    rgba(124, 179, 66, 0.6) 40%,
-    rgba(104, 159, 56, 0.8) 100%);
+    rgba(144, 238, 144, 0.5) 0%,
+    rgba(124, 179, 66, 0.7) 40%,
+    rgba(104, 159, 56, 0.9) 100%);
   border-radius: var(--radius-xl);
   box-shadow: 
-    0 30px 80px rgba(0, 0, 0, 0.2),
-    0 15px 40px rgba(0, 0, 0, 0.15),
-    inset 0 -10px 30px rgba(0, 0, 0, 0.1),
+    0 30px 80px rgba(0, 0, 0, 0.25),
+    0 15px 40px rgba(0, 0, 0, 0.2),
+    inset 0 -10px 30px rgba(0, 0, 0, 0.15),
     inset 0 5px 20px rgba(255, 255, 255, 0.3),
     0 0 60px rgba(255, 255, 255, 0.2);
   animation: platformFloat 4s ease-in-out infinite;
   transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* 植物大战僵尸风格网格草坪 */
+.lawn-grid {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 3px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+}
+
+.lawn-cell {
+  background: linear-gradient(135deg, 
+    rgba(144, 238, 144, 0.6) 0%,
+    rgba(124, 179, 66, 0.7) 100%);
+  border-radius: var(--radius-sm);
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.lawn-cell:nth-child(odd) {
+  background: linear-gradient(135deg, 
+    rgba(124, 179, 66, 0.7) 0%,
+    rgba(104, 159, 56, 0.8) 100%);
+}
+
+.lawn-cell:hover {
+  background: linear-gradient(135deg, 
+    rgba(164, 255, 164, 0.8) 0%,
+    rgba(144, 199, 86, 0.9) 100%);
+  transform: scale(1.02);
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15),
+    0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.lawn-cell.planted {
+  background: linear-gradient(135deg, 
+    rgba(104, 159, 56, 0.8) 0%,
+    rgba(84, 139, 46, 0.9) 100%);
 }
 
 /* 浮岛底部岩石层 */
@@ -626,19 +679,33 @@ body {
 /* 植物容器 */
 .plants-container {
   position: absolute;
-  bottom: 60px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 140px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 20px;
-  pointer-events: none; /* 允许点击穿透到浮岛 */
+  height: 100%;
+  pointer-events: none;
 }
 
 .plants-container .plant {
-  pointer-events: auto; /* 植物本身可以点击 */
+  pointer-events: auto;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: plantGrow 0.5s ease-out;
+}
+
+/* 植物大战僵尸风格花朵样式 */
+.plant-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.plant-emoji {
+  font-size: 48px;
+  animation: plantSway 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 /* 植物通用样式 */
