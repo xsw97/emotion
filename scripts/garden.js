@@ -597,7 +597,7 @@ const Garden = {
     plant.className = 'plant plant-animation';
     plant.dataset.typeId = typeId;
     plant.style.left = `${x - type.size.width / 2}px`;
-    plant.style.bottom = `${y - type.size.height / 2}px`;
+    plant.style.top = `${y - type.size.height / 2}px`;
     plant.style.width = `${type.size.width}px`;
     plant.style.height = `${type.size.height}px`;
     plant.innerHTML = `<span class="plant-emoji">${type.emoji}</span>`;
