@@ -529,66 +529,126 @@ body {
   position: absolute;
   bottom: 10%;
   left: 50%;
-  transform: translateX(-50%) perspective(800px) rotateX(5deg);
+  transform: translateX(-50%) perspective(1000px) rotateX(15deg) rotateY(-5deg);
   width: 80%;
   max-width: 600px;
-  height: 200px;
-  background: linear-gradient(180deg, 
-    rgba(144, 238, 144, 0.4) 0%,
-    rgba(124, 179, 66, 0.6) 40%,
-    rgba(104, 159, 56, 0.8) 100%);
-  border-radius: var(--radius-xl);
+  height: 280px;
+  background: 
+    /* 低多边形草地顶部 - 青绿色 */
+    linear-gradient(135deg, 
+      #7EC8C8 0%, #6BB8B8 15%, #8DD4D4 30%, 
+      #7EC8C8 45%, #6BB8B8 60%, #8DD4D4 75%, #7EC8C8 100%);
+  border-radius: 20% 30% 15% 25% / 25% 20% 30% 15%;
   box-shadow: 
-    0 30px 80px rgba(0, 0, 0, 0.2),
-    0 15px 40px rgba(0, 0, 0, 0.15),
-    inset 0 -10px 30px rgba(0, 0, 0, 0.1),
-    inset 0 5px 20px rgba(255, 255, 255, 0.3),
-    0 0 60px rgba(255, 255, 255, 0.2);
+    0 40px 100px rgba(0, 0, 0, 0.3),
+    0 20px 50px rgba(0, 0, 0, 0.2),
+    inset 0 -15px 40px rgba(0, 0, 0, 0.15),
+    inset 0 10px 30px rgba(255, 255, 255, 0.2);
   animation: platformFloat 4s ease-in-out infinite;
   transform-style: preserve-3d;
+  overflow: visible;
 }
 
-/* 浮岛底部岩石层 */
+/* 浮岛侧面 - 深绿色悬崖 */
 .floating-platform::before {
   content: '';
   position: absolute;
-  bottom: -40px;
-  left: 10%;
-  right: 10%;
-  height: 80px;
-  background: linear-gradient(180deg,
-    rgba(139, 119, 101, 0.9) 0%,
-    rgba(101, 82, 66, 0.95) 50%,
-    rgba(78, 62, 48, 1) 100%);
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  top: 20%;
+  left: -5%;
+  right: -5%;
+  bottom: -60px;
+  background: 
+    linear-gradient(180deg,
+      #2D6B5E 0%, #245A4F 20%, #1E4D43 40%,
+      #1A4038 60%, #15332D 80%, #0F2622 100%);
+  border-radius: 15% 20% 40% 35% / 10% 15% 50% 45%;
   box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    inset 0 -5px 15px rgba(0, 0, 0, 0.2);
-  transform: translateZ(-20px);
+    0 30px 60px rgba(0, 0, 0, 0.4),
+    inset 0 -10px 30px rgba(0, 0, 0, 0.3),
+    inset 5px 0 20px rgba(0, 0, 0, 0.2);
+  transform: translateZ(-30px) rotateX(-5deg);
+  z-index: -1;
 }
 
-/* 浮岛顶部高光 */
+/* 浮岛顶部岩石 - 棕色低多边形 */
 .floating-platform::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 40%;
+  top: -30px;
+  left: 20%;
+  right: 20%;
+  height: 80px;
+  background: 
+    linear-gradient(135deg,
+      #8B6F5E 0%, #7A5F4F 20%, #9B7F6E 40%,
+      #8B6F5E 60%, #6B4F3F 80%, #7A5F4F 100%);
+  border-radius: 40% 50% 30% 45% / 60% 70% 40% 50%;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 -5px 15px rgba(0, 0, 0, 0.2),
+    inset 0 5px 15px rgba(255, 255, 255, 0.1);
+  transform: translateZ(10px);
+}
+
+/* 瀑布效果 */
+.waterfall {
+  position: absolute;
+  top: 10%;
+  right: 25%;
+  width: 40px;
+  height: 200px;
   background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    rgba(135, 206, 235, 0.9) 0%,
+    rgba(100, 180, 220, 0.8) 30%,
+    rgba(80, 160, 200, 0.7) 60%,
+    rgba(60, 140, 180, 0.6) 100%);
+  border-radius: 50% 50% 30% 30% / 20% 20% 40% 40%;
+  animation: waterfallFlow 2s linear infinite;
+  box-shadow: 
+    0 0 20px rgba(135, 206, 235, 0.5),
+    inset 0 0 10px rgba(255, 255, 255, 0.3);
+  z-index: 10;
   pointer-events: none;
+}
+
+.waterfall::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.1) 100%);
+  animation: waterfallShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes waterfallFlow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100px;
+  }
+}
+
+@keyframes waterfallShimmer {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 @keyframes platformFloat {
   0%, 100% {
-    transform: translateX(-50%) perspective(800px) rotateX(5deg) translateY(0);
+    transform: translateX(-50%) perspective(1000px) rotateX(15deg) rotateY(-5deg) translateY(0);
   }
   50% {
-    transform: translateX(-50%) perspective(800px) rotateX(5deg) translateY(-15px);
+    transform: translateX(-50%) perspective(1000px) rotateX(15deg) rotateY(-5deg) translateY(-15px);
   }
 }
 
@@ -2067,4 +2127,71 @@ body {
   .plant-item-name {
     font-size: 11px;
   }
+  
+  /* 移动端浮岛调整 */
+  .floating-platform {
+    width: 90%;
+    height: 240px;
+  }
+  
+  .lawn-grid {
+    width: 95%;
+    height: 120px;
+  }
+}
+
+/* 网格草坪 - 低多边形风格 */
+.lawn-grid {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+  width: 85%;
+  height: 150px;
+  z-index: 5;
+}
+
+.lawn-cell {
+  position: relative;
+  background: linear-gradient(135deg,
+    rgba(126, 200, 200, 0.7) 0%,
+    rgba(107, 184, 184, 0.8) 50%,
+    rgba(141, 212, 212, 0.7) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 2px 5px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.15),
+    0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.lawn-cell:nth-child(even) {
+  background: linear-gradient(135deg,
+    rgba(107, 184, 184, 0.8) 0%,
+    rgba(126, 200, 200, 0.7) 50%,
+    rgba(107, 184, 184, 0.8) 100%);
+}
+
+.lawn-cell:hover {
+  background: linear-gradient(135deg,
+    rgba(141, 212, 212, 0.9) 0%,
+    rgba(126, 200, 200, 1) 100%);
+  box-shadow: 
+    0 0 20px rgba(126, 200, 200, 0.6),
+    inset 0 2px 10px rgba(255, 255, 255, 0.4);
+  transform: scale(1.08);
+}
+
+.lawn-cell.planted {
+  background: linear-gradient(135deg,
+    rgba(90, 160, 160, 0.9) 0%,
+    rgba(70, 140, 140, 1) 100%);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
