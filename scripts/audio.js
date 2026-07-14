@@ -9,6 +9,8 @@ const GardenAudio = {
   oscillators: [],
   noiseNode: null,
   gainNode: null,
+  moonlightAudio: null, // 月光音频元素
+  useMoonlight: false, // 是否使用月光作为背景音乐
 
   /**
    * 初始化音频上下文
@@ -19,6 +21,17 @@ const GardenAudio = {
       this.gainNode = this.context.createGain();
       this.gainNode.connect(this.context.destination);
       this.gainNode.gain.value = 0.3;
+      
+      // 初始化月光音频
+      this.moonlightAudio = new Audio('/audio/moonlight.mp3');
+      this.moonlightAudio.loop = true;
+      this.moonlightAudio.volume = 0.5;
+      
+      // 检查音频文件是否存在
+      this.moonlightAudio.addEventListener('error', () => {
+        console.log('月光音频文件未找到，使用默认背景音乐');
+        this.useMoonlight = false;
+      });
     } catch (e) {
       console.error('Audio init error:', e);
     }
@@ -37,7 +50,7 @@ const GardenAudio = {
   },
 
   /**
-   * 播放背景音乐（轻柔的环境音）
+   * 播放背景音乐（轻柔的环境音或月光）
    */
   playBackground() {
     this.checkContext();
@@ -45,6 +58,24 @@ const GardenAudio = {
     
     this.isPlaying = true;
     
+    // 如果启用了月光音频，播放月光
+    if (this.useMoonlight && this.moonlightAudio) {
+      this.moonlightAudio.play().catch(e => {
+        console.log('月光音频播放失败，切换到默认背景音乐');
+        this.useMoonlight = false;
+        this.playDefaultBackground();
+      });
+      return;
+    }
+    
+    // 否则播放默认背景音乐
+    this.playDefaultBackground();
+  },
+  
+  /**
+   * 播放默认背景音乐（Web Audio API 生成）
+   */
+  playDefaultBackground() {
     // 创建柔和的和弦背景音
     const frequencies = [261.63, 329.63, 392]; // C-E-G（大三和弦）
     
@@ -78,6 +109,12 @@ const GardenAudio = {
     if (!this.isPlaying) return;
     
     this.isPlaying = false;
+    
+    // 停止月光音频
+    if (this.moonlightAudio && !this.moonlightAudio.paused) {
+      this.moonlightAudio.pause();
+      this.moonlightAudio.currentTime = 0;
+    }
     
     // 停止所有振荡器
     this.oscillators.forEach(({ osc, gain }) => {
@@ -324,5 +361,27 @@ const GardenAudio = {
     
     osc.start();
     osc.stop(this.context.currentTime + 0.3);
+  },
+  
+  /**
+   * 启用月光背景音乐
+   */
+  enableMoonlight() {
+    this.useMoonlight = true;
+    if (this.isPlaying) {
+      this.stopBackground();
+      this.playBackground();
+    }
+  },
+  
+  /**
+   * 禁用月光背景音乐，切换到默认背景音乐
+   */
+  disableMoonlight() {
+    this.useMoonlight = false;
+    if (this.isPlaying) {
+      this.stopBackground();
+      this.playBackground();
+    }
   }
 };

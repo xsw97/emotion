@@ -74,6 +74,17 @@ const App = {
       Tasks.showTaskPanel();
     });
     
+    // 月光按钮
+    document.getElementById('btn-moonlight')?.addEventListener('click', () => {
+      if (GardenAudio.useMoonlight) {
+        GardenAudio.disableMoonlight();
+        App.showToast('已切换到默认背景音乐');
+      } else {
+        GardenAudio.enableMoonlight();
+        App.showToast('已切换到德彪西《月光》');
+      }
+    });
+    
     // 统计按钮
     document.getElementById('btn-stats')?.addEventListener('click', () => {
       Stats.showStatsPanel();
