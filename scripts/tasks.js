@@ -352,14 +352,15 @@ const Tasks = {
       <button class="btn-primary" id="submit-gratitude" style="margin-top: 24px;">完成记录</button>
     `;
     
+    // 获取输入框
+    const inputs = [
+      document.getElementById('gratitude-1'),
+      document.getElementById('gratitude-2'),
+      document.getElementById('gratitude-3')
+    ];
+    
     // 绑定提交按钮
     document.getElementById('submit-gratitude')?.addEventListener('click', () => {
-      const inputs = [
-        document.getElementById('gratitude-1'),
-        document.getElementById('gratitude-2'),
-        document.getElementById('gratitude-3')
-      ];
-      
       // 检查是否填写
       const filledCount = inputs.filter(i => i && i.value.trim()).length;
       

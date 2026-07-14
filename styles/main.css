@@ -976,9 +976,15 @@ body {
   padding: var(--space-md);
   background: rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-lg);
-  margin: var(--space-lg) auto;
+  margin: auto auto var(--space-lg);
   max-width: 300px;
   box-shadow: var(--shadow-soft);
+  pointer-events: none;
+}
+
+.task-hint .hint-content,
+.task-hint .btn-task {
+  pointer-events: auto;
 }
 
 .hint-content {
