@@ -27,7 +27,6 @@ const App = {
     GardenAudio.init();
     Weather.init();
     Garden.init();
-    Garden.initPlanting(); // 初始化种植功能
     Tasks.init();
     Stats.init();
     

@@ -446,9 +446,9 @@ const Garden = {
     this.plantPanelClose.addEventListener('click', () => this.closePlantPanel());
     
     // 点击花园区域种植
-    const platform = document.querySelector('.floating-platform');
-    if (platform) {
-      platform.addEventListener('click', (e) => this.handlePlantClick(e));
+    this.platform = document.querySelector('.floating-platform');
+    if (this.platform) {
+      this.platform.addEventListener('click', (e) => this.handlePlantClick(e));
     }
     
     // 点击其他区域关闭种植模式
