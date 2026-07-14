@@ -634,6 +634,11 @@ body {
   justify-content: center;
   align-items: flex-end;
   gap: 20px;
+  pointer-events: none; /* 允许点击穿透到浮岛 */
+}
+
+.plants-container .plant {
+  pointer-events: auto; /* 植物本身可以点击 */
 }
 
 /* 植物通用样式 */
