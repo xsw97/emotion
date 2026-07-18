@@ -205,6 +205,8 @@ const Storage = {
     if (newLevel > state.level) {
       state.level = newLevel;
       state.levelName = this.getLevelName(newLevel);
+      // 保存更新后的状态
+      this.updateGardenState(state);
       // 返回升级信息
       return { upgraded: true, newLevel, levelName: state.levelName };
     }
