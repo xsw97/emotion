@@ -8,15 +8,13 @@ appliedPatches = [ ]
 [dev]
 build = [ ]
 run = [
-  "sh",
-  "-c",
-  "node server.js"
+  "node",
+  "server.js"
 ]
 
 [deploy]
 build = [ ]
 run = [
-  "sh",
-  "-c",
-  "node server.js"
+  "node",
+  "server.js"
 ]

@@ -4,6 +4,14 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+// 全局异常捕获，防止服务意外退出
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
+});
+
 const PORT = process.env.DEPLOY_RUN_PORT || 5000;
 const PUBLIC_DIR = __dirname;
 
