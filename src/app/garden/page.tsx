@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase';
+import { createClient, getCurrentUser } from '@/lib/supabase';
 
 // ============ 情绪数据 ============
 const MOODS = [
@@ -68,6 +68,20 @@ export default function GardenPage() {
   const gardenRef = useRef<HTMLDivElement>(null);
 
   // 检查登录状态
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        router.push('/auth/login');
+      }
+      setLoading(false);
+    };
+    checkAuth();
+  }, [router]);
+
   // 加载花园数据 - 先声明后使用
   const loadGardenData = useCallback(async (userId: string) => {
     const saved = localStorage.getItem(`garden_${userId}`);
