@@ -66,6 +66,57 @@ export default function GardenPage() {
   const [rainDrops, setRainDrops] = useState<{left: number; delay: number; duration: number}[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gardenRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const oscRef = useRef<OscillatorNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
+  const musicIntervalRef = useRef<number | null>(null);
+
+  // 播放放松音乐（五声音阶）
+  const playRelaxingMusic = () => {
+    if (audioCtxRef.current) return;
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioCtxRef.current = ctx;
+    const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+    let noteIndex = 0;
+    const playNote = () => {
+      if (!audioCtxRef.current) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      const idx = Math.floor(Math.random() * notes.length);
+      osc.frequency.setValueAtTime(notes[idx], ctx.currentTime);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 1.5);
+    };
+    playNote();
+    musicIntervalRef.current = window.setInterval(playNote, 1800);
+  };
+
+  const stopMusic = () => {
+    if (musicIntervalRef.current) {
+      clearInterval(musicIntervalRef.current);
+      musicIntervalRef.current = null;
+    }
+    if (audioCtxRef.current) {
+      audioCtxRef.current.close();
+      audioCtxRef.current = null;
+    }
+    setIsPlaying(false);
+  };
+
+  const toggleMusic = () => {
+    if (isPlaying) {
+      stopMusic();
+    } else {
+      playRelaxingMusic();
+      setIsPlaying(true);
+    }
+  };
 
   // 检查登录状态
   useEffect(() => {
@@ -606,12 +657,22 @@ export default function GardenPage() {
 
                 {currentTask.id === 'music' && (
                   <div className="space-y-4">
-                    <div className="text-4xl animate-spin-slow">🎵</div>
+                    <div className="text-4xl">{isPlaying ? '🎶' : '🎵'}</div>
                     <p className="text-gray-400">聆听放松音乐，让心灵平静</p>
-                    <button onClick={() => completeTask(currentTask)}
-                      className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-8 py-3 rounded-full font-bold hover:shadow-lg transition">
-                      完成聆听
-                    </button>
+                    <div className="flex justify-center gap-3">
+                      <button onClick={toggleMusic}
+                        className={`px-8 py-3 rounded-full font-bold transition-all ${
+                          isPlaying
+                            ? 'bg-red-100 text-red-500 hover:bg-red-200'
+                            : 'bg-gradient-to-r from-purple-400 to-pink-500 text-white hover:shadow-lg'
+                        }`}>
+                        {isPlaying ? '⏹ 停止' : '▶ 播放音乐'}
+                      </button>
+                      <button onClick={() => { stopMusic(); completeTask(currentTask); }}
+                        className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-8 py-3 rounded-full font-bold hover:shadow-lg transition">
+                        完成聆听
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
