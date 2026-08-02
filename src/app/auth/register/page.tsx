@@ -30,48 +30,53 @@ export default function RegisterPage() {
 
     setLoading(true);
 
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username: email.split("@")[0] },
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
-
-    // 注册成功后，为用户创建初始花园数据
-    if (data.user) {
-      await fetch("/api/garden", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-session": data.session?.access_token || "",
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username: email.split("@")[0] },
         },
-        body: JSON.stringify({
-          level: 1,
-          levelName: "种子",
-          sunshine: 0,
-          nutrient: 0,
-          plants: [],
-          unlockedPlants: ["flower-1", "grass-1"],
-        }),
       });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      // 注册成功后，为用户创建初始花园数据
+      if (data.user) {
+        await fetch("/api/garden", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-session": data.session?.access_token || "",
+          },
+          body: JSON.stringify({
+            level: 1,
+            levelName: "种子",
+            sunshine: 0,
+            nutrient: 0,
+            plants: [],
+            unlockedPlants: ["flower-1", "grass-1"],
+          }),
+        });
+      }
+
+      setSuccess(true);
+      setLoading(false);
+
+      // 自动跳转到花园
+      setTimeout(() => {
+        router.push("/garden");
+        router.refresh();
+      }, 1500);
+    } catch (err) {
+      setError("数据库服务未配置，请部署到 Coze 平台后使用");
+      setLoading(false);
     }
-
-    setSuccess(true);
-    setLoading(false);
-
-    // 自动跳转到花园
-    setTimeout(() => {
-      router.push("/garden");
-      router.refresh();
-    }, 1500);
   };
 
   if (success) {

@@ -17,20 +17,25 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      router.push("/garden");
+      router.refresh();
+    } catch (err) {
+      setError("数据库服务未配置，请部署到 Coze 平台后使用");
       setLoading(false);
-      return;
     }
-
-    router.push("/garden");
-    router.refresh();
   };
 
   return (
