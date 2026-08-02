@@ -13,59 +13,6 @@ const MOODS = [
   { emoji: '😢', label: '很难过', value: 1, color: '#483D8B' },
 ];
 
-const MUSIC_TYPES = [
-  { id: 'pentatonic', name: '五声音阶', icon: '🎵', desc: '柔和的中国风旋律' },
-  { id: 'rain', name: '雨声白噪音', icon: '🌧️', desc: '淅淅沥沥的雨声，放松助眠' },
-  { id: 'drone', name: '冥想低音', icon: '🧘', desc: '深沉的低频共鸣，平静内心' },
-  { id: 'ocean', name: '海浪之声', icon: '🌊', desc: '轻柔的海浪拍打沙滩' },
-];
-
-function startRainNoise(ctx: AudioContext) {
-  const bufferSize = ctx.sampleRate * 2;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1) * Math.pow(Math.random(), 0.5);
-  }
-  const source = ctx.createBufferSource();
-  source.buffer = buffer;
-  source.loop = true;
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(3000, ctx.currentTime);
-  filter.Q.setValueAtTime(0.5, ctx.currentTime);
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.08, ctx.currentTime);
-  source.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  source.start();
-  return source;
-}
-
-function startOceanNoise(ctx: AudioContext) {
-  const bufferSize = ctx.sampleRate * 2;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    const t = i / ctx.sampleRate;
-    data[i] = (Math.random() * 2 - 1) * Math.sin(t * 0.3) * 0.5 + (Math.random() * 2 - 1) * 0.2;
-  }
-  const source = ctx.createBufferSource();
-  source.buffer = buffer;
-  source.loop = true;
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(800, ctx.currentTime);
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.1, ctx.currentTime);
-  source.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  source.start();
-  return source;
-}
-
 const WEATHERS = {
   5: { name: 'sunny', bg: 'linear-gradient(135deg, #FFD700, #FFA500)', particles: 'sunshine' },
   4: { name: 'clear', bg: 'linear-gradient(135deg, #87CEEB, #98FB98)', particles: 'cloud' },
@@ -120,89 +67,72 @@ export default function GardenPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gardenRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [musicType, setMusicType] = useState<string>('pentatonic');
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-  const musicIntervalRef = useRef<number | null>(null);
+  const [musicFiles, setMusicFiles] = useState<{name: string; url: string}[]>([]);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // 播放放松音乐
-  const playRelaxingMusic = useCallback(() => {
-    if (audioCtxRef.current) return;
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    audioCtxRef.current = ctx;
-
-    if (musicType === 'pentatonic') {
-      const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
-      const playNote = () => {
-        if (!audioCtxRef.current) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        const idx = Math.floor(Math.random() * notes.length);
-        osc.frequency.setValueAtTime(notes[idx], ctx.currentTime);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 1.5);
-      };
-      playNote();
-      musicIntervalRef.current = window.setInterval(playNote, 1800);
-    } else if (musicType === 'rain') {
-      const source = startRainNoise(ctx) as unknown as AudioBufferSourceNode;
-      sourceRef.current = source;
-    } else if (musicType === 'drone') {
-      const freqs = [55, 82.5, 110, 130.81];
-      freqs.forEach((freq) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.04, ctx.currentTime);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-      });
-      musicIntervalRef.current = window.setInterval(() => {
-        if (!audioCtxRef.current) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(200 + Math.random() * 100, ctx.currentTime);
-        gain.gain.setValueAtTime(0.02, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 3);
-      }, 4000);
-    } else if (musicType === 'ocean') {
-      const source = startOceanNoise(ctx) as unknown as AudioBufferSourceNode;
-      sourceRef.current = source;
+  // 音乐播放控制
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newFiles = files.map(f => ({ name: f.name, url: URL.createObjectURL(f) }));
+    setMusicFiles(prev => [...prev, ...newFiles]);
+    if (musicFiles.length === 0 && newFiles.length > 0) {
+      setCurrentTrackIndex(0);
     }
-  }, [musicType]);
-
-  const stopMusic = () => {
-    if (musicIntervalRef.current) {
-      clearInterval(musicIntervalRef.current);
-      musicIntervalRef.current = null;
-    }
-    if (audioCtxRef.current) {
-      audioCtxRef.current.close();
-      audioCtxRef.current = null;
-    }
-    setIsPlaying(false);
   };
 
-  const toggleMusic = (type?: string) => {
-    if (isPlaying) {
-      stopMusic();
-    } else {
-      if (type) setMusicType(type);
-      playRelaxingMusic();
-      setIsPlaying(true);
+  const playTrack = (index: number) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
+    if (musicFiles.length === 0) return;
+    const audio = new Audio(musicFiles[index].url);
+    audioRef.current = audio;
+    setCurrentTrackIndex(index);
+    audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+    audio.addEventListener('ended', () => {
+      setIsPlaying(false);
+      if (index < musicFiles.length - 1) {
+        playTrack(index + 1);
+      }
+    });
+  };
+
+  const togglePlayPause = () => {
+    if (!audioRef.current) {
+      if (musicFiles.length > 0) {
+        playTrack(currentTrackIndex);
+      }
+      return;
+    }
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+    }
+  };
+
+  const playPrev = () => {
+    if (musicFiles.length === 0) return;
+    const prev = (currentTrackIndex - 1 + musicFiles.length) % musicFiles.length;
+    playTrack(prev);
+  };
+
+  const playNext = () => {
+    if (musicFiles.length === 0) return;
+    const next = (currentTrackIndex + 1) % musicFiles.length;
+    playTrack(next);
+  };
+
+  const stopMusic = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setIsPlaying(false);
   };
 
   // 检查登录状态
@@ -745,41 +675,73 @@ export default function GardenPage() {
                 {currentTask.id === 'music' && (
                   <div className="space-y-4">
                     <div className="text-4xl">{isPlaying ? '🎶' : '🎵'}</div>
-                    <p className="text-gray-400">选择一种音乐，让心灵平静</p>
+                    <p className="text-gray-400">上传你的音乐，让心灵平静</p>
 
-                    {/* 音乐类型选择 */}
-                    {!isPlaying && (
-                      <div className="grid grid-cols-2 gap-2 mb-4">
-                        {MUSIC_TYPES.map((mt: any) => (
-                          <button
-                            key={mt.id}
-                            onClick={() => { setMusicType(mt.id); toggleMusic(mt.id); }}
-                            className={`p-3 rounded-2xl border-2 transition-all text-left ${
-                              musicType === mt.id
-                                ? 'border-purple-400 bg-purple-50'
-                                : 'border-gray-200 hover:border-purple-200'
+                    {/* 文件上传 */}
+                    <input type="file" accept="audio/*" multiple
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <button onClick={() => fileInputRef.current?.click()}
+                      className="w-full p-3 rounded-2xl border-2 border-dashed border-purple-300 text-purple-500 hover:bg-purple-50 transition">
+                      📁 点击上传音乐文件
+                    </button>
+
+                    {/* 播放列表 */}
+                    {musicFiles.length > 0 && (
+                      <div className="max-h-32 overflow-y-auto space-y-1 mb-3">
+                        {musicFiles.map((f, i) => (
+                          <div key={i}
+                            onClick={() => playTrack(i)}
+                            className={`flex items-center gap-2 p-2 rounded-xl cursor-pointer text-sm transition ${
+                              i === currentTrackIndex
+                                ? 'bg-purple-100 text-purple-700 font-bold'
+                                : 'hover:bg-gray-100'
                             }`}
                           >
-                            <div className="text-xl">{mt.icon}</div>
-                            <div className="text-sm font-bold">{mt.name}</div>
-                            <div className="text-xs text-gray-400">{mt.desc}</div>
-                          </button>
+                            <span>{i === currentTrackIndex && isPlaying ? '🔊' : '🎵'}</span>
+                            <span className="truncate">{f.name}</span>
+                          </div>
                         ))}
                       </div>
                     )}
 
-                    {isPlaying && (
-                      <div className="flex justify-center gap-3">
-                        <button onClick={() => toggleMusic()}
-                          className="px-8 py-3 rounded-full font-bold transition-all bg-red-100 text-red-500 hover:bg-red-200">
-                          ⏹ 停止播放
+                    {/* 播放控制 */}
+                    {musicFiles.length > 0 && (
+                      <div className="flex items-center justify-center gap-4">
+                        <button onClick={playPrev}
+                          className="w-12 h-12 rounded-full bg-purple-100 hover:bg-purple-200 flex items-center justify-center text-xl transition">
+                          ⏮
                         </button>
-                        <button onClick={() => { stopMusic(); completeTask(currentTask); }}
-                          className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-8 py-3 rounded-full font-bold hover:shadow-lg transition">
-                          完成聆听 ✓
+                        <button onClick={togglePlayPause}
+                          className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl transition shadow-lg ${
+                            isPlaying ? 'bg-red-100 text-red-500 hover:bg-red-200' : 'bg-purple-100 text-purple-500 hover:bg-purple-200'
+                          }`}>
+                          {isPlaying ? '⏸' : '▶️'}
+                        </button>
+                        <button onClick={playNext}
+                          className="w-12 h-12 rounded-full bg-purple-100 hover:bg-purple-200 flex items-center justify-center text-xl transition">
+                          ⏭
                         </button>
                       </div>
                     )}
+
+                    {/* 当前播放状态 */}
+                    {musicFiles.length > 0 && (
+                      <p className="text-xs text-gray-400">
+                        {isPlaying
+                          ? `正在播放: ${musicFiles[currentTrackIndex]?.name}`
+                          : '已暂停'
+                        }
+                      </p>
+                    )}
+
+                    {/* 完成按钮 */}
+                    <button onClick={() => { stopMusic(); completeTask(currentTask); }}
+                      className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-8 py-3 rounded-full font-bold hover:shadow-lg transition">
+                      完成聆听 ✓
+                    </button>
                   </div>
                 )}
               </div>
