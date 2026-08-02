@@ -329,68 +329,133 @@ export default function GardenPage() {
 
       {/* 花园场景 */}
       <div
-        ref={gardenRef}
-        className="relative z-10 mx-auto w-[90%] max-w-3xl cursor-pointer flex flex-col justify-end"
-        onClick={handleGardenClick}
+        className="relative z-10 mx-auto w-[90%] max-w-3xl flex flex-col justify-end"
         style={{ minHeight: '70vh' }}
       >
         {/* 浮岛 */}
-        <div className="relative mx-auto w-[80%] max-w-2xl mb-16"
+        <div className="relative mx-auto w-[85%] max-w-2xl mb-8 cursor-pointer"
+          ref={gardenRef}
+          onClick={handleGardenClick}
           style={{
-            perspective: '800px',
+            perspective: '1200px',
             transformStyle: 'preserve-3d',
           }}
         >
-          <div className="relative rounded-[50%_50%_45%_45%] overflow-hidden"
+          {/* 浮岛光晕 */}
+          <div className="absolute -inset-20 rounded-full opacity-30 blur-3xl pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse, rgba(126,200,80,0.3) 0%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+              animation: 'pulseGlow 4s ease-in-out infinite',
+            }}
+          />
+          <div className="relative rounded-[50%_50%_45%_45%] overflow-visible"
             style={{
               height: '200px',
-              background: `
-                radial-gradient(ellipse at 30% 30%, #7ec850 0%, #5da83a 40%, #3d8a2a 70%, #2d6a1a 100%)
-              `,
-              boxShadow: `
-                0 -10px 30px rgba(0,0,0,0.1),
-                inset 0 10px 30px rgba(255,255,255,0.2),
-                0 20px 60px rgba(0,0,0,0.3)
-              `,
-              transform: 'rotateX(5deg)',
               transformStyle: 'preserve-3d',
             }}
           >
-            {/* 草地纹理 */}
-            <div className="absolute inset-0 opacity-20"
+            {/* 悬浮阴影 */}
+            <div className="absolute -bottom-8 left-[-10%] w-[120%] h-12 rounded-[50%]"
               style={{
-                backgroundImage: `
-                  radial-gradient(circle at 20% 40%, rgba(255,255,255,0.3) 1px, transparent 1px),
-                  radial-gradient(circle at 60% 70%, rgba(255,255,255,0.2) 1px, transparent 1px)
+                background: 'radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, transparent 70%)',
+                transform: 'rotateX(5deg)',
+                animation: 'shadowPulse 3s ease-in-out infinite',
+              }}
+            />
+            {/* 草坪主体 */}
+            <div className="relative w-full h-full rounded-[50%_50%_45%_45%] overflow-hidden cursor-pointer"
+              style={{
+                background: `
+                  radial-gradient(ellipse at 25% 25%, #8de060 0%, #7ec850 20%, #5da83a 50%, #3d8a2a 75%, #2d6a1a 100%)
                 `,
-                backgroundSize: '20px 20px, 15px 15px'
+                boxShadow: `
+                  0 -8px 40px rgba(126,200,80,0.2),
+                  inset 0 15px 40px rgba(255,255,255,0.25),
+                  inset 0 -10px 30px rgba(0,0,0,0.15),
+                  0 15px 50px rgba(0,0,0,0.2)
+                `,
+                transform: 'rotateX(6deg)',
+                transformStyle: 'preserve-3d',
               }}
-            />
-            {/* 种植的植物 */}
-            {gardenState.plants.map((plant: any, i: number) => {
-              const p = PLANTS.find(p => p.id === plant.id);
-              return (
-                <div key={i} className="absolute transition-all duration-700 animate-grow"
-                  style={{
-                    left: `${plant.x}%`,
-                    bottom: `${plant.y}%`,
-                    fontSize: `${plant.size}rem`,
-                    transform: 'translateX(-50%)',
-                    animationDelay: `${i * 0.1}s`
-                  }}
-                >
-                  {p?.icon || '🌸'}
-                </div>
-              );
-            })}
-            {/* 底部岩石 */}
-            <div className="absolute -bottom-2 left-[-5%] w-[110%] h-8 rounded-[50%]"
+            >
+              {/* 草地高光纹理 */}
+              <div className="absolute inset-0 opacity-25"
+                style={{
+                  backgroundImage: `
+                    radial-gradient(circle at 15% 30%, rgba(255,255,255,0.35) 1px, transparent 1px),
+                    radial-gradient(circle at 50% 60%, rgba(255,255,255,0.15) 1px, transparent 1px),
+                    radial-gradient(circle at 80% 25%, rgba(255,255,255,0.2) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '18px 18px, 22px 22px, 14px 14px',
+                }}
+              />
+              {/* 草叶装饰 */}
+              <div className="absolute top-[15%] left-[20%] text-2xl opacity-40 select-none" style={{transform: 'rotate(-10deg)'}}>🌿</div>
+              <div className="absolute top-[60%] right-[10%] text-2xl opacity-35 select-none" style={{transform: 'rotate(15deg)'}}>🌿</div>
+              <div className="absolute top-[30%] right-[25%] text-xl opacity-30 select-none" style={{transform: 'rotate(5deg)'}}>🌱</div>
+              {/* 种植的植物 */}
+              {gardenState.plants.map((plant: any, i: number) => {
+                const p = PLANTS.find(p => p.id === plant.id);
+                return (
+                  <div key={i} className="absolute transition-all duration-700 animate-grow"
+                    style={{
+                      left: `${plant.x}%`,
+                      bottom: `${plant.y}%`,
+                      fontSize: `${plant.size}rem`,
+                      transform: 'translateX(-50%)',
+                      animationDelay: `${i * 0.1}s`,
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+                    }}
+                  >
+                    {p?.icon || '🌸'}
+                  </div>
+                );
+              })}
+              {/* 边缘水滴效果 */}
+              <div className="absolute bottom-0 left-[20%] w-1 h-3 rounded-full bg-white/20"
+                style={{animation: 'waterDrop 2.5s ease-in-out infinite'}} />
+              <div className="absolute bottom-0 left-[45%] w-1 h-2 rounded-full bg-white/15"
+                style={{animation: 'waterDrop 2.5s ease-in-out 0.8s infinite'}} />
+              <div className="absolute bottom-0 right-[25%] w-1 h-2.5 rounded-full bg-white/18"
+                style={{animation: 'waterDrop 2.5s ease-in-out 1.6s infinite'}} />
+            </div>
+            {/* 岩石底部 - 分层 */}
+            <div className="absolute -bottom-1 left-[-8%] w-[116%] h-10 rounded-[50%]"
               style={{
-                background: 'linear-gradient(180deg, #8B7355, #6B5335, #4A3728)',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                transform: 'rotateX(-10deg) translateZ(-10px)'
+                background: 'linear-gradient(180deg, #8B7355 0%, #7A6548 30%, #6B5335 60%, #4A3728 100%)',
+                boxShadow: '0 5px 20px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.1)',
+                transform: 'rotateX(-8deg) translateZ(-15px)',
               }}
             />
+            <div className="absolute -bottom-2 left-[-12%] w-[124%] h-6 rounded-[50%]"
+              style={{
+                background: 'linear-gradient(180deg, #6B5335 0%, #4A3728 50%, #3A2A1A 100%)',
+                boxShadow: '0 3px 15px rgba(0,0,0,0.3), inset 0 1px 4px rgba(255,255,255,0.08)',
+                transform: 'rotateX(-6deg) translateZ(-25px)',
+              }}
+            />
+            {/* 岩石纹理 */}
+            <div className="absolute -bottom-1 left-[5%] w-[30%] h-2 rounded-full opacity-20"
+              style={{
+                background: 'radial-gradient(ellipse, #9B8365 0%, transparent 70%)',
+                transform: 'translateZ(-10px)',
+              }}
+            />
+            <div className="absolute -bottom-1 right-[10%] w-[20%] h-1.5 rounded-full opacity-15"
+              style={{
+                background: 'radial-gradient(ellipse, #9B8365 0%, transparent 70%)',
+                transform: 'translateZ(-10px)',
+              }}
+            />
+            {/* 藤蔓装饰 */}
+            <div className="absolute -bottom-1 left-[5%] text-lg select-none"
+              style={{transform: 'rotate(20deg) translateZ(-5px)', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))'}}>
+              🌿
+            </div>
+            <div className="absolute -bottom-1 right-[8%] text-base select-none"
+              style={{transform: 'rotate(-15deg) translateZ(-5px)', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))'}}>
+              🌿
+            </div>
           </div>
         </div>
 

@@ -163,6 +163,20 @@ body {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.05); opacity: 0.4; }
+}
+@keyframes shadowPulse {
+  0%, 100% { transform: rotateX(5deg) scale(1); opacity: 0.3; }
+  50% { transform: rotateX(5deg) scale(0.95); opacity: 0.2; }
+}
+@keyframes waterDrop {
+  0%, 100% { opacity: 0; transform: translateY(0) scaleY(1); }
+  30% { opacity: 0.5; transform: translateY(0) scaleY(1); }
+  60% { opacity: 0.3; transform: translateY(5px) scaleY(0.5); }
+  100% { opacity: 0; transform: translateY(10px) scaleY(0); }
+}
 @keyframes butterfly {
   0% { transform: translate(0, 0) rotate(0deg); }
   25% { transform: translate(50px, -30px) rotate(10deg); }
