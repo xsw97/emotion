@@ -96,6 +96,12 @@ export default function GardenPage() {
         const lastMood = records[records.length - 1];
         setMood(lastMood.value);
       }
+    } else {
+      // 新用户：重置为默认花园状态
+      setGardenState({ level: 1, sunshine: 0, nutrient: 0, plants: [] });
+      setMoodRecords([]);
+      setStreak(0);
+      setMood(3);
     }
   }, []);
 
