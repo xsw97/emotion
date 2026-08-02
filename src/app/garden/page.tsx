@@ -97,11 +97,18 @@ export default function GardenPage() {
         setMood(lastMood.value);
       }
     } else {
-      // 新用户：重置为默认花园状态
-      setGardenState({ level: 1, sunshine: 0, nutrient: 0, plants: [] });
+      // 新用户：重置为默认花园状态并保存到 localStorage
+      const defaultState = { level: 1, sunshine: 0, nutrient: 0, plants: [] };
+      setGardenState(defaultState);
       setMoodRecords([]);
       setStreak(0);
       setMood(3);
+      // 保存初始数据，确保新用户有独立的花园数据
+      localStorage.setItem(`garden_${userId}`, JSON.stringify({
+        gardenState: defaultState,
+        moodRecords: [],
+        streak: 0,
+      }));
     }
   }, []);
 
@@ -306,7 +313,12 @@ export default function GardenPage() {
           </div>
         </div>
         <button
-          onClick={() => router.push('/auth/login')}
+          onClick={async () => {
+            const supabase = createClient();
+            await supabase.auth.signOut();
+            router.push('/auth/login');
+            router.refresh();
+          }}
           className="bg-white/20 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/30 transition"
         >
           退出

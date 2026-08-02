@@ -48,21 +48,35 @@ export default function RegisterPage() {
 
       // 注册成功后，为用户创建初始花园数据
       if (data.user) {
-        await fetch("/api/garden", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-session": data.session?.access_token || "",
-          },
-          body: JSON.stringify({
-            level: 1,
-            levelName: "种子",
-            sunshine: 0,
-            nutrient: 0,
-            plants: [],
-            unlockedPlants: ["flower-1", "grass-1"],
-          }),
-        });
+        // 先在 localStorage 中初始化花园数据
+        const key = `garden_${data.user.id}`;
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, JSON.stringify({
+            gardenState: { level: 1, sunshine: 0, nutrient: 0, plants: [] },
+            moodRecords: [],
+            streak: 0,
+          }));
+        }
+        // 同时尝试同步到云端（可选，失败不影响本地使用）
+        try {
+          await fetch("/api/garden", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-session": data.session?.access_token || "",
+            },
+            body: JSON.stringify({
+              level: 1,
+              levelName: "种子",
+              sunshine: 0,
+              nutrient: 0,
+              plants: [],
+              unlockedPlants: ["flower-1", "grass-1"],
+            }),
+          });
+        } catch {
+          // 云端同步失败不影响本地使用
+        }
       }
 
       setSuccess(true);

@@ -61,10 +61,8 @@ export const createClient = () => {
 
       // 邮箱密码注册（本地模式）
       signUp: async ({ email, password, options }: { email: string; password: string; options?: { data?: { username?: string } } }) => {
-        const existing = getLocalUser();
-        if (existing) {
-          return { data: { user: existing }, error: null };
-        }
+        // 先登出当前用户
+        clearLocalUser();
 
         // 检查是否已注册（本地存储里记录已注册的邮箱）
         const registered = JSON.parse(localStorage.getItem('garden_registered_users') || '{}');
