@@ -312,17 +312,23 @@ export default function GardenPage() {
             <span>🔥 连续 {streak} 天</span>
           </div>
         </div>
-        <button
-          onClick={async () => {
-            const supabase = createClient();
-            await supabase.auth.signOut();
-            router.push('/auth/login');
-            router.refresh();
-          }}
-          className="bg-white/20 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/30 transition"
-        >
-          退出
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-2 text-white/90 text-sm">
+            <span>👤</span>
+            <span>{user?.user_metadata?.username || user?.email?.split('@')[0] || '用户'}</span>
+          </div>
+          <button
+            onClick={async () => {
+              const supabase = createClient();
+              await supabase.auth.signOut();
+              router.push('/auth/login');
+              router.refresh();
+            }}
+            className="bg-white/20 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/30 transition text-sm"
+          >
+            退出
+          </button>
+        </div>
       </div>
 
       {/* 侧边栏 */}
