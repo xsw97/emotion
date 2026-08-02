@@ -330,12 +330,12 @@ export default function GardenPage() {
       {/* 花园场景 */}
       <div
         ref={gardenRef}
-        className="relative z-10 mx-auto mt-16 w-[90%] max-w-3xl cursor-pointer"
+        className="relative z-10 mx-auto w-[90%] max-w-3xl cursor-pointer flex flex-col justify-end"
         onClick={handleGardenClick}
-        style={{ minHeight: '60vh' }}
+        style={{ minHeight: '70vh' }}
       >
         {/* 浮岛 */}
-        <div className="relative mx-auto w-[80%] max-w-2xl"
+        <div className="relative mx-auto w-[80%] max-w-2xl mb-16"
           style={{
             perspective: '800px',
             transformStyle: 'preserve-3d',
