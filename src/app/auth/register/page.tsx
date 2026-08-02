@@ -74,7 +74,7 @@ export default function RegisterPage() {
         router.refresh();
       }, 1500);
     } catch (err) {
-      setError("数据库服务未配置，请部署到 Coze 平台后使用");
+      setError("注册失败，请检查网络连接");
       setLoading(false);
     }
   };

@@ -33,7 +33,7 @@ export default function LoginPage() {
       router.push("/garden");
       router.refresh();
     } catch (err) {
-      setError("数据库服务未配置，请部署到 Coze 平台后使用");
+      setError("登录失败，请检查网络连接");
       setLoading(false);
     }
   };

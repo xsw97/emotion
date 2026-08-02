@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  // 如果 Supabase 环境变量未配置，跳过认证检查
+  // 如果 Supabase 环境变量未配置，跳过所有认证检查（本地模式）
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return supabaseResponse;
+    return NextResponse.next({ request });
   }
 
+  let supabaseResponse = NextResponse.next({ request });
+
   try {
+    const { createServerClient } = await import("@supabase/ssr");
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -54,7 +54,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   } catch (err) {
-    // Supabase 服务不可用，允许请求继续
     console.warn("Supabase middleware bypassed:", err instanceof Error ? err.message : err);
   }
 
