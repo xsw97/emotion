@@ -1,35 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+function getSupabaseConfig() {
+  return {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.COZE_SUPABASE_URL || '',
+    key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.COZE_SUPABASE_ANON_KEY || '',
+  };
+}
+
 // 创建服务端 Supabase 客户端（用于验证 token）
 function createSupabaseClient(request: NextRequest) {
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {},
+  const { url, key } = getSupabaseConfig();
+  return createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
       },
-    }
-  );
+      setAll() {},
+    },
+  });
 }
 
 // 获取当前用户
 async function getUserId(request: NextRequest) {
+  const { url, key } = getSupabaseConfig();
   const session = request.headers.get("x-session");
   if (session) {
     // 通过 token 验证
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: { getAll: () => [], setAll: () => {} },
-        auth: { persistSession: false },
-      }
-    );
+    const supabase = createServerClient(url, key, {
+      cookies: { getAll: () => [], setAll: () => {} },
+      auth: { persistSession: false },
+    });
     const { data } = await supabase.auth.getUser(session);
     return data.user?.id;
   }

@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // 获取 Supabase 配置（支持 COZE_ 和 NEXT_PUBLIC_ 前缀）
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.COZE_SUPABASE_URL || '';
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.COZE_SUPABASE_ANON_KEY || '';
+
   // 如果 Supabase 环境变量未配置，跳过所有认证检查（本地模式）
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!supabaseUrl || !supabaseKey) {
     return NextResponse.next({ request });
   }
 
@@ -12,8 +16,8 @@ export async function middleware(request: NextRequest) {
   try {
     const { createServerClient } = await import("@supabase/ssr");
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      supabaseUrl,
+      supabaseKey,
       {
         cookies: {
           getAll() {

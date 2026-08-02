@@ -7,9 +7,12 @@ export interface LocalUser {
   username: string;
 }
 
-// 检查 Supabase 是否已配置
-function isSupabaseConfigured(): boolean {
-  return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// 检查 Supabase 是否已配置（支持 COZE_ 前缀和 NEXT_PUBLIC_ 前缀）
+function getSupabaseConfig(): { url: string; key: string } | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.COZE_SUPABASE_URL || '';
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.COZE_SUPABASE_ANON_KEY || '';
+  if (url && key) return { url, key };
+  return null;
 }
 
 // 生成本地用户 ID
@@ -41,13 +44,11 @@ function clearLocalUser(): void {
 
 export const createClient = () => {
   // 如果 Supabase 已配置，使用真实的 Supabase 客户端
-  if (isSupabaseConfigured()) {
+  const config = getSupabaseConfig();
+  if (config) {
     // 动态导入避免在未配置时崩溃
     const { createBrowserClient } = require('@supabase/ssr');
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    return createBrowserClient(config.url, config.key);
   }
 
   // 本地模式：返回一个兼容 Supabase Auth API 的 mock 对象
